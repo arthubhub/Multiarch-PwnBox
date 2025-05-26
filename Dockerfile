@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       tmux \
       gdb \
       gdb-multiarch \
+      git \
       # Python3 & pwntools
       python3 \
       python3-pip \
@@ -50,6 +51,10 @@ RUN python3 -m pip install --upgrade pip setuptools wheel \
 RUN ln -s /usr/i686-linux-gnu       /usr/i386-linux-gnu \
  && mkdir -p /usr/lib/i386-linux-gnu \
  && ln -s /usr/lib32               /usr/lib/i386-linux-gnu
+
+# Installer peda pour l'utilisateur
+RUN git clone https://github.com/longld/peda.git /root/peda && \
+    echo "source /root/peda/peda.py" >> /root/.gdbinit
 
 # Montez votre dossier ./shared ici
 VOLUME ["/shared"]
