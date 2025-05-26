@@ -1,13 +1,13 @@
-# auto\_arch\_pwntools
+# Multiarch-PwnBox
 
-**AutoArchPwntools** est un outil de débogage multi-architecture basé sur Pwntools et QEMU. Il permet de lancer automatiquement un binaire dans QEMU, d’y attacher GDB Multiarch et de gérer les environnements de bibliothèques (libc, ld) pour diverses architectures (x86\_64, ARM32/64, MIPS, RISC-V, etc.).
+**Multiarch-PwnBox** est un outil de débogage multi-architecture basé sur Pwntools et QEMU. Il permet de lancer automatiquement un binaire dans QEMU, d’y attacher GDB Multiarch et de gérer les environnements de bibliothèques (libc, ld) pour diverses architectures (x86\_64, ARM32/64, MIPS, RISC-V, etc.).
 
 Ce projet est en développement, si vous trouvez une incompatibilité ou un dysfonctionnement, créez une issue !
 
 ---
 
 ## 🚀 Fonctionnalités
-
+* **Debug automatique sur toute architechture** : Lance un environnement de debug automatiquement selon votre exécutable.
 * **Détection automatique des dépendances** (QEMU, toolchains, libs) et suggestions d’installation.
 * **Support multi-architecture** : x86 (i386/amd64), ARM32/ARM64, MIPS, RISC‑V.
 * **Integration Pwntools** : création du process QEMU via `pwn.process()` pour interagir (recv, send, interactive).
@@ -32,15 +32,15 @@ Ce projet est en développement, si vous trouvez une incompatibilité ou un dysf
 ### Télécharger le repo
 
 ```bash
-git clone https://github.com/arthubhub/auto_arch_pwntools.git
+git clone https://github.com/arthubhub/Multiarch-PwnBox.git
 ```
 
 ### Avec Docker
 
 ```bash
-docker build -t auto_arch_pwntools .
+docker build -t Multiarch_PwnBox .
 # Monter le répertoire shared pour accéder aux scripts et binaires
-docker run -it --rm -v "$(pwd)/shared:/shared" auto_arch_pwntools
+docker run -it --rm -v "$(pwd)/shared:/shared" Multiarch_PwnBox
 ```
 
 Sinon, vous pouvez le lancer avec `run.sh`
@@ -50,7 +50,7 @@ Sinon, vous pouvez le lancer avec `run.sh`
 ## 🚩 Structure du projet
 
 ```text
-auto_arch_pwntools/
+Multiarch-PwnBox/
 ├── BOF ON ANY ARCH.md        # Notes sur les buffer overflows multi-arch
 ├── Dockerfile                # Image Docker préconfigurée
 ├── README.md                 # Ce fichier
