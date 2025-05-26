@@ -55,4 +55,6 @@ RUN ln -s /usr/i686-linux-gnu       /usr/i386-linux-gnu \
 VOLUME ["/shared"]
 WORKDIR /shared
 
-CMD ["bash"]
+ENV PYTHONPATH=/shared
+
+CMD ["tmux"]
