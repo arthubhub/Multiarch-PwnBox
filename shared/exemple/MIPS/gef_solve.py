@@ -8,7 +8,7 @@ class Prog:
         self.multiarch = None
         self.BINARY= "./ch64/ch64"
         self.GDB_PORT = 1234
-        self.GDB_VERSION = None
+        self.GDB_VERSION = "gef"
         self.DISABLE_ASLR = True
         self.TMUX = True
         self.LIBC_DIR= "ch64" # ici il faut mettre là ou se trouve le répertoire "lib"
