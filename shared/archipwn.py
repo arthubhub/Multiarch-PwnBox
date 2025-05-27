@@ -39,10 +39,14 @@ class MultiArchDebugger:
         ("amd64",   "x86_64-linux-gnu",    "sudo apt-get install libc6-dev-amd64-cross"),
     ]
 
-    def __init__(self, binary_path, gdb_port=1235,
+    def __init__(self, binary_path, gdbversion=None , gdb_port=1235,
                  disable_aslr=True, tmux_split=True,
                  breakpoints=None, lib_override=None):
         self.binary = binary_path
+        if gdbversion:
+            self.gdb_version = "gdb-multiarch -q -ex init-" + gdbversion # init-peda / init-gef / init-pwndbg
+        else : 
+            self.gdb_version = "gdb-multiarch"
         self.gdb_port = gdb_port
         self.disable_aslr = disable_aslr
         self.tmux_split = tmux_split
@@ -89,8 +93,12 @@ class MultiArchDebugger:
         if arch not in self.DEFAULT_QEMU:
             raise ValueError(f"Architecture inconnue: {arch}")
         base = self.DEFAULT_QEMU[arch]
-        if self.lib_override and os.path.isdir(self.lib_override):
-            lib_path = self.lib_override
+        if self.lib_override :
+            if os.path.isdir(self.lib_override):
+                lib_path = self.lib_override
+            else:
+                print("#### ERROR in build_qemu_command : given arg for lib is not a dir")
+                exit(1)
         else:
             lib_path = self.libs_path.get(arch)
         cmd = [base, "-g", str(self.gdb_port), "-L", lib_path, self.binary]
@@ -133,7 +141,7 @@ class MultiArchDebugger:
         for bp in self.breakpoints:
             cmds.append(f" -ex 'b*{bp}'")
         #cmds.append(" -ex continue")
-        gdb_cmd = ["gdb-multiarch"] + cmds
+        gdb_cmd = [self.gdb_version] + cmds
 
         subprocess.Popen(self.tmux_cmd + ["".join(gdb_cmd)])
         log.info("GDB attaché on port %d.", self.gdb_port)
