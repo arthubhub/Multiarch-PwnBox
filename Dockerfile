@@ -39,8 +39,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       # Python3 & pwntools -> important
       python3 \
       python3-pip \
-      # wget & certif -> pour GEF
-      wget ca-certificates \
+      # wget & certif & file -> pour GEF
+      wget ca-certificates file \
       && rm -rf /var/lib/apt/lists/*
 
 # Pour pwntools
