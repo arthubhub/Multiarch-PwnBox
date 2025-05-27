@@ -140,7 +140,7 @@ class MultiArchDebugger:
         # launch QEMU with pwntools process
         process_cmd = self.qemu_cmd
         self.qemu_proc = process(self.qemu_cmd, env=env)  # pwntools process
-        time.sleep(0.5)
+        if self.debug_mode : time.sleep(0.5)
         log.info("QEMU demarre via pwntools")
         return self.qemu_proc
 
