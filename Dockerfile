@@ -8,8 +8,8 @@ ENV HOME=/root
 RUN apt-get update && apt-get install -y --no-install-recommends \
       # émulation -> pour qemu
       binfmt-support \ 
-      qemu-user-static \
-      qemu-user \
+      #qemu-user-static \
+      #qemu-user \
       # toolchains & dev headers (cross) -> pour les tests
       build-essential \
       gcc \
@@ -42,7 +42,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       python3-venv \
       # wget & certif & file -> pour GEF
       wget ca-certificates file \
+      # for qemu :
+      autoconf \
+      libtool \
+      pkg-config \
+      libglib2.0-dev \
+      libpixman-1-dev \
+      libfdt-dev \
+      zlib1g-dev \
+      ninja-build \
+      meson \
       && rm -rf /var/lib/apt/lists/*
+
+# Update meson, ubuntu 24.04 Meson version is 1.3.2 but project requires >=1.5.0
+RUN python3 -m pip install --upgrade meson --break-system-packages
+
+# Compile qemu at a recent version (including gdbstubs for mappings)
+RUN cd /usr/src \
+      && git clone https://gitlab.com/qemu-project/qemu.git \
+      && cd qemu \
+      && git fetch --tags \
+      && git checkout v10.0.2 \
+      && mkdir build && cd build \
+      && ../configure \
+            --prefix=/usr/local \
+            --target-list=arm-linux-user,aarch64-linux-user,mips-linux-user,riscv64-linux-user,i386-linux-user,x86_64-linux-user \
+            --enable-debug \
+      && ninja -C . install \
+      && ldconfig
 
 # Crée un venv à /opt/venv
 RUN python3 -m venv /opt/venv
