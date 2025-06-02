@@ -1,5 +1,5 @@
 # Dockerfile pour compilation & debugging multi-arch (x86_64, ARM32/64, MIPS, RISC-V, Windows…)
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV HOME=/root
@@ -39,17 +39,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       # Python3 & pwntools -> important
       python3 \
       python3-pip \
+      python3-venv \
       # wget & certif & file -> pour GEF
       wget ca-certificates file \
       && rm -rf /var/lib/apt/lists/*
 
-# Pour pwntools
-RUN python3 -m pip install --upgrade pip setuptools wheel \
+# Crée un venv à /opt/venv
+RUN python3 -m venv /opt/venv
+# Ajoute le venv au PATH pour que les commandes python passent par là
+ENV PATH="/opt/venv/bin:${PATH}"
+
+# Pour pwntools, modifiée pour le venv
+RUN pip install --upgrade pip setuptools wheel \ 
  && pip install --no-cache-dir \
       --default-timeout=100 \
       --retries=5 \
       --resume-retries=5 \
-      pycryptodome pwntools 
+      pycryptodome pwntools
     
 
 # Crée les symlinks manquants pour i386-linux-gnu -> pour build & run en x86
