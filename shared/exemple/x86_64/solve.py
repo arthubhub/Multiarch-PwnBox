@@ -6,7 +6,7 @@ class Prog:
     def __init__(self):
         self.io = None
         self.multiarch = None
-        self.DEBUGGER = "pwndbg"
+        self.DEBUGGER = "peda"
         self.BINARY= "./ropchain_64"
         self.GDB_PORT = 1234
         self.DISABLE_ASLR = True

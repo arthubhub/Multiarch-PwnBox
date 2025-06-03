@@ -44,7 +44,10 @@ class MultiArchDebugger:
                  breakpoints=None, lib_override=None):
         self.binary = binary_path
         if gdbversion:
-            self.gdb_version = "gdb-multiarch -q -ex init-" + gdbversion # init-peda / init-gef / init-pwndbg
+            if gdbversion == "gef":
+                self.gdb_version = "LC_ALL=C.UTF-8 gdb-multiarch -ex init-gef" # init-gef 
+            else:
+                self.gdb_version = "gdb-multiarch -ex init-" + gdbversion # init-peda / init-pwndbg
         else : 
             self.gdb_version = "gdb-multiarch"
         self.gdb_port = gdb_port
@@ -145,7 +148,19 @@ class MultiArchDebugger:
         return self.qemu_proc
 
     def _attach_gdb(self):
-        cmds = [f" -ex 'symbol-file {self.binary}'",
+        """ Commands to be ran :
+        - set debuginfod enabled on
+        - file <file_path>
+        - set sysroot <path wher to find /lib>
+        - set architecture <arch>
+        - target remote localhost:<port>
+        - unset env ..."""
+
+
+
+        cmds = [f" -ex 'set debuginfod enabled on'",
+                f" -ex 'file {self.binary}'",
+                f" -ex 'set sysroot {self.libs_path.get(context.arch)}'"
                 f" -ex 'set solib-search-path {self.libs_path.get(context.arch)}'",
                 f" -ex 'set architecture {context.arch}'",
                 f" -ex 'target remote localhost:{self.gdb_port}'",
@@ -155,8 +170,9 @@ class MultiArchDebugger:
             cmds.append(f" -ex 'b*{bp}'")
         #cmds.append(" -ex continue")
         gdb_cmd = [self.gdb_version] + cmds
-
+        
         self.gdb_proc = subprocess.Popen(self.tmux_cmd + ["".join(gdb_cmd)])
+        print("".join(gdb_cmd))
         log.info("GDB attaché")
         return self.gdb_proc
     

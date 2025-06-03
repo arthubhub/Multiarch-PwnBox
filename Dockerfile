@@ -40,6 +40,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 \
       python3-pip \
       python3-venv \
+      # six -> pour peda
+      python3-six \
       # wget & certif & file -> pour GEF
       wget ca-certificates file \
       # for qemu :
@@ -82,7 +84,8 @@ RUN pip install --upgrade pip setuptools wheel \
       --default-timeout=100 \
       --retries=5 \
       --resume-retries=5 \
-      pycryptodome pwntools
+      pycryptodome pwntools\
+      six
     
 
 # Crée les symlinks manquants pour i386-linux-gnu -> pour build & run en x86
@@ -94,11 +97,14 @@ RUN ln -s /usr/i686-linux-gnu       /usr/i386-linux-gnu \
 # voir https://infosecwriteups.com/pwndbg-gef-peda-one-for-all-and-all-for-one-714d71bf36b8
 # pwndbg -> voir la doc de pwndbg
 RUN git clone https://github.com/pwndbg/pwndbg /opt/pwndbg-src && \
-    cd /opt/pwndbg-src && \
-    ./setup.sh
+      cd /opt/pwndbg-src && \
+      ./setup.sh
 
 # PEDA -> voir la doc de PEDA
-RUN git clone https://github.com/longld/peda.git $HOME/peda
+RUN git clone https://github.com/longld/peda.git $HOME/peda \
+      && rm -f $HOME/peda/lib/six.py \
+      && rm -fr $HOME/peda/lib/six
+# on enlève six ici car il est nul 
 
 # GEF -> voir la doc de GEF
 RUN wget -q -O $HOME/.gdbinit-gef.py \
