@@ -18,6 +18,27 @@ Ce projet est en développement, si vous trouvez une incompatibilité ou un dysf
 
 ---
 
+## 🛠️ Technologies utilisées
+
+- **Système hôte** : Ubuntu 24.04  
+- **Conteneur/Docker** : image de base Ubuntu 24.04, Docker 20.10+  
+- **QEMU** : version 10.2 (cibles aarch64, mips, riscv64, i386, x86_64)  
+- **GDB Multiarch** : GDB 15.x compilé pour x86_64-linux-gnu, prise en charge de plusieurs architectures  
+- **Pwntools** : Python 3.12 (installé dans un venv par défault dans le PATH)  
+- **PEDA** : Python Exploit Development Assistance for GDB (patché pour désactiver le `six` embarqué qui pose actuellement problème)  
+- **Pwndbg** : plugin GDB pour exploitation (installé depuis GitHub)  
+- **GEF (GDB Enhanced Features)** : plugin GDB (installé via `wget`)  
+- **Toolchains cross-compilation** :  
+  - x86/i386 (`lib32gcc-s1`, `libc6-dev-i386-cross`)  
+  - ARM32/ARMHF (`gcc-arm-linux-gnueabi`, `libc6-dev-armhf-cross`)  
+  - ARM64/AARCH64 (`gcc-aarch64-linux-gnu`, `libc6-dev-arm64-cross`)  
+  - MIPS32 (`gcc-mips-linux-gnu`, `libc6-dev-mips-cross`)  
+  - RISC-V 64 (`gcc-riscv64-linux-gnu`, `libc6-dev-riscv64-cross`)  
+- **Dépendances de compilation QEMU** : `autoconf`, `libtool`, `pkg-config`, `libglib2.0-dev`, `libpixman-1-dev`, `libfdt-dev`, `zlib1g-dev`, `ninja-build`, `meson`  
+- **TMUX** : pour splitter l’écran et attacher GDB à QEMU automatiquement  
+
+---
+
 ## 📦 Prérequis
 
 * **Docker** (pour utiliser l’image Docker fournie)
