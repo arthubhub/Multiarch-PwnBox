@@ -21,7 +21,17 @@ printf '%s\n' \
 '|  Visit: https://github.com/arthubhub/Multiarch-PwnBox                 |' \
 '-------------------------------------------------------------------------' \
 '' \
-'              Happy pwning! 🐚 Exploit. Debug. Reverse. Repeat.'
+'              Happy pwning! 🐚 Exploit. Debug. Reverse. Repeat.' \
+'' \
+'Quelques conseils pour tmux :' \
+'  • Ouvrir une nouvelle fenêtre : Ctrl+b c' \
+'  • Diviser l'écran horizontalement : Ctrl+b "' \
+'  • Diviser l'écran verticalement : Ctrl+b %' \
+'  • Naviguer entre les volets : Ctrl+b ←/→/↑/↓' \
+'  • Passer en mode défilement (scrollback) : Ctrl+b [' \
+'' \
+'Pour plus d\'astuces, consultez le cheat sheet : https://tmuxcheatsheet.com/' \
+''
 
 # Enfin on reste sur un shell interactif
 exec /bin/bash
