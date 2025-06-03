@@ -25,12 +25,12 @@ printf '%s\n' \
 '' \
 'Quelques conseils pour tmux :' \
 '  • Ouvrir une nouvelle fenêtre : Ctrl+b c' \
-'  • Diviser l'écran horizontalement : Ctrl+b "' \
-'  • Diviser l'écran verticalement : Ctrl+b %' \
+'  • Diviser l écran horizontalement : Ctrl+b "' \
+'  • Diviser l écran verticalement : Ctrl+b %' \
 '  • Naviguer entre les volets : Ctrl+b ←/→/↑/↓' \
 '  • Passer en mode défilement (scrollback) : Ctrl+b [' \
 '' \
-'Pour plus d\'astuces, consultez le cheat sheet : https://tmuxcheatsheet.com/' \
+'Pour plus d\ astuces, consultez le cheat sheet : https://tmuxcheatsheet.com/' \
 ''
 
 # Enfin on reste sur un shell interactif

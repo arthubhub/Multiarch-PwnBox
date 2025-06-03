@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  multiarch-dev:
+    build: .
+    image: multiarch-dev
+    volumes:
+      - ./shared:/shared
+    stdin_open: true
+    tty: true
+    working_dir: /shared
