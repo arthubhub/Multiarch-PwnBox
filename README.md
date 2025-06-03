@@ -59,12 +59,18 @@ git clone https://github.com/arthubhub/Multiarch-PwnBox.git
 ### Avec Docker
 
 ```bash
+#docker compose run --build --rm multiarch-dev
+docker compose run --rm multiarch-dev
+```
+
+Ou, ancienne version
+```bash
 docker build -t Multiarch_PwnBox .
 # Monter le répertoire shared pour accéder aux scripts et binaires
 docker run -it --rm -v "$(pwd)/shared:/shared" Multiarch_PwnBox
 ```
 
-Sinon, vous pouvez le lancer avec `run.sh`
+Sinon, vous pouvez le lancer avec `run.sh`, qui sera bientot supprimé.
 
 ---
 
