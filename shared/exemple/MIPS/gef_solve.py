@@ -25,7 +25,7 @@ PROG.multiarch = MultiArchDebugger(
     PROG.BINARY, PROG.GDB_VERSION ,PROG.GDB_PORT, PROG.DISABLE_ASLR,
     PROG.TMUX, PROG.BREAKPOINTS, PROG.LIBC_DIR)
 PROG.load_binaries()
-PROG.io = PROG.multiarch.launch()
+PROG.io = PROG.multiarch.debug()
 PROG.io.interactive()
 
 

