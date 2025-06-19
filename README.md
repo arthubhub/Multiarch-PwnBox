@@ -108,38 +108,61 @@ Multiarch-PwnBox/
 
 ## 📖 Usage
 
-### Ligne de commande
-
+### Ouvrir l'environnement de tests
 ```bash
-# Mode interactif (dans tmux)
-python3 archipwn.py --binary ./test/amd64/solaris/chall --break main --lib ./test/amd64/solaris
+docker compose build
+docker compose run --service-ports multiarch-dev
 ```
 
 ### Exécution depuis un script Python
 
 ```python
+from pwn import *
 from archipwn import MultiArchDebugger
+import time
 
-dbg = MultiArchDebugger(
-    binary_path='./ch64/ch64',
-    gdb_port=1234,
-    disable_aslr=True,
-    tmux_split=True,
-    breakpoints=['main'],
-    lib_override='ch64'
-)
-dbg.launch().interactive()
+class Prog:
+    def __init__(self):
+        self.io = None
+        self.multiarch = None
+        self.DEBUGGER = "pwndbg" # or gef or peda
+        self.BINARY= "./chall"
+        self.GDB_PORT = 1234
+        self.DISABLE_ASLR = False
+        self.TMUX = True
+        self.LIBC_DIR= "" # ici il faut mettre là ou se trouve le répertoire "lib"
+        self.BREAKPOINTS=["main"]
+
+    def load_binaries(self):
+        self.ELF = ELF(self.BINARY)
+        #self.LIBC = os.path.join(self.LIBC_DIR,"lib/libc.so.6")
+        self.ELF_FUNCTIONS = [func for func in self.ELF.functions]
+        print(f"ELF_FUNCTIONS : {self.ELF_FUNCTIONS}")
+
+if __name__ == "__main__":
+    PROG = Prog()
+    PROG.multiarch = MultiArchDebugger(
+        PROG.BINARY, PROG.DEBUGGER, PROG.GDB_PORT, PROG.DISABLE_ASLR,
+        PROG.TMUX, PROG.BREAKPOINTS, PROG.LIBC_DIR)
+    PROG.load_binaries()
+    PROG.io = PROG.multiarch.debug()
+
+    time.sleep(1)  
+    PROG.io.interactive() 
+    PROG.multiarch.shutdown()
 ```
 
 ### Exemple :
 
-- Lancez docker et mettez en place l'environnement (fichiers et librairies si besoin). Créez un fichier de base pour tester votre exécutable.
-<img width="779" alt="image" src="https://github.com/user-attachments/assets/a3bc40b1-b286-40e9-b725-abdef6704003" />
+- Lancez docker et créez l'image de tests :
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/18a8dcd4-8f90-410b-954a-16b8e392020c" />
 
-- Lancez tmux pour avoir deux écrans, changez d'écrans avec ctrl + b puis <- ou ->, scrollez avec ctrl + b puis '['. Ensuite, exécuter votre programme, n'oubliez pas de réaliser une action ( eg p.interactive() ), sinon le processus s'arrêtera.
-<img width="1447" alt="image" src="https://github.com/user-attachments/assets/ac685753-637a-437e-bc0f-e923299bd9bb" />
 
-- Le programme a détecté du 'MIPS 32', vous pouvez analyser le code dynamiquement avec gdb !
+- Créez votre fichier d'exploit et lancez le avec `python3 solve.py`
+<img width="1449" alt="image" src="https://github.com/user-attachments/assets/c177d83d-c816-42b5-a1f8-399cbebb2a4b" />
+
+
+- Le programme a détecté du 'arm', vous pouvez analyser le code dynamiquement avec gdb !
 Ensuite, créez votre exploit selon vos goûts et placez vos breakpoints là où vous avez besoin pour votre analyse.
 
 
