@@ -27,7 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       gcc-riscv64-linux-gnu \
       libc6-dev-riscv64-cross \
       # x86 i386  -> pour les tests et qemu
-      lib32gcc-s1 \
+      #      lib32gcc-s1 \
+      #      libc6-dev-i386-cross \
       libc6-dev-i386-cross \
       # Windows PE (x86_64)  -> ca c'est pas utile pour le moment
       mingw-w64 \ 
@@ -54,6 +55,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       zlib1g-dev \
       ninja-build \
       meson \
+     # enable and install 32-bit libs for x86 testing
+      && dpkg --add-architecture i386 \
+      && apt-get update \
+      && apt-get install -y --no-install-recommends \
+      libc6:i386 libgcc-s1:i386 \
+      qemu-user-static \
       && rm -rf /var/lib/apt/lists/*
 
 # Update meson, ubuntu 24.04 Meson version is 1.3.2 but project requires >=1.5.0

@@ -3,8 +3,9 @@ services:
   multiarch-dev:
     build: .
     image: multiarch-dev
-    volumes:
-      - ./shared:/shared
     stdin_open: true
     tty: true
     working_dir: /shared
+    entrypoint: ["tmux", "new-session", "-A", "-s", "pwnbox", "/root/init"]
+    volumes:
+      - ./shared:/shared
