@@ -6,7 +6,7 @@ Ce projet est en développement, si vous trouvez une incompatibilité ou un dysf
 
 ---
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 * **Debug automatique sur toute architechture** : Lance un environnement de debug automatiquement selon votre exécutable.
 * **Détection automatique des dépendances** (QEMU, toolchains, libs) et suggestions d’installation.
 * **Support multi-architecture** : x86 (i386/amd64), ARM32/ARM64, MIPS, RISC‑V.
@@ -18,7 +18,7 @@ Ce projet est en développement, si vous trouvez une incompatibilité ou un dysf
 
 ---
 
-## 🛠️ Technologies utilisées
+## Technologies utilisées
 
 - **Système hôte** : Ubuntu 24.04  
 - **Conteneur/Docker** : image de base Ubuntu 24.04, Docker 20.10+  
@@ -39,7 +39,7 @@ Ce projet est en développement, si vous trouvez une incompatibilité ou un dysf
 
 ---
 
-## 📦 Prérequis
+## Prérequis
 
 * **Docker** (pour utiliser l’image Docker fournie)
 * **tmux** (optionnel si `--no-tmux`) (local)
@@ -48,7 +48,7 @@ Ce projet est en développement, si vous trouvez une incompatibilité ou un dysf
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### Télécharger le repo
 
@@ -74,7 +74,7 @@ Sinon, vous pouvez le lancer avec `run.sh`, qui sera bientot supprimé.
 
 ---
 
-## 🚩 Structure du projet
+## Structure du projet
 
 ```text
 Multiarch-PwnBox/
@@ -106,7 +106,7 @@ Multiarch-PwnBox/
 
 ---
 
-## 📖 Usage
+## Usage
 
 ### Ouvrir l'environnement de tests
 ```bash
@@ -165,20 +165,3 @@ if __name__ == "__main__":
 - Le programme a détecté du 'arm', vous pouvez analyser le code dynamiquement avec gdb !
 Ensuite, créez votre exploit selon vos goûts et placez vos breakpoints là où vous avez besoin pour votre analyse.
 
-
-
----
-
-## 🤝 Contribuer
-
-1. Forkez ce dépôt
-2. Créez une branche : `git checkout -b feature/ma-nouvelle-fonction`
-3. Committez vos changements : `git commit -m 'Ajoute une nouvelle feature'`
-4. Poussez : `git push origin feature/ma-nouvelle-fonction`
-5. Ouvrez une Pull Request
-
----
-
-## 📄 License
-
-Ce projet est distribué sous licence MIT. Consultez le fichier `LICENSE` pour plus de détails.
